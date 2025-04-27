@@ -1217,23 +1217,24 @@ export default function EmailList({
 
                               {mention?.docs?.map((doc, index) => (
                                 <>
-                                  <details>
+                                  {/* <details>
                                     <summary>{doc.name}</summary>
                                     <p>
                                       <img src={doc.url} alt="" />
                                     </p>
-                                  </details>
-                                  {/* <a
-                                  key={index}
-                                  href={doc.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center p-2 bg-[#1a1a1a] rounded hover:bg-[#2a2a2a]"
-                                >
-                                  <span className="text-sm text-blue-400">
-                                    {doc.name}
-                                  </span>
-                                </a> */}
+                                  </details> */}
+
+                                  <a
+                                    key={index}
+                                    href={doc.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center p-2 bg-[#1a1a1a] rounded hover:bg-[#2a2a2a]"
+                                  >
+                                    <span className="text-sm text-blue-400">
+                                      {doc.name}
+                                    </span>
+                                  </a>
                                 </>
                               ))}
                             </div>
@@ -1295,10 +1296,8 @@ export default function EmailList({
                             />
                             <Label>Markdown</Label>
                           </div> */}
-                          
 
-                          
-                            {/* <textarea
+                          {/* <textarea
                               value={newMention.content}
                               onChange={(e) =>
                                 setNewMention({
@@ -1311,11 +1310,11 @@ export default function EmailList({
                               required
                             />
                          */}
-                            <QuillEditor
-                              newMention={newMention}
-                              setNewMention={setNewMention}
-                            />
-                      
+                          <QuillEditor
+                            newMention={newMention}
+                            setNewMention={setNewMention}
+                          />
+
                           {/*  */}
                           {/* <Tiptap /> */}
                         </div>
