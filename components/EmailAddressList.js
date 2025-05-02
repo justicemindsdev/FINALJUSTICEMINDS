@@ -60,7 +60,7 @@ export default function EmailAddressList({ contacts, onEmailClick, onLoadMore, i
                 <span className="font-medium text-base capitalize">
                   {contact.name || contact.email.split("@")[0]}
                 </span>
-                <span className="text-xs opacity-90 text-[#7F7F7F]">
+                <span className="text-xs opacity-90 text-[#B0B0B0]">
                   {contact.email}
                 </span>
               </button>

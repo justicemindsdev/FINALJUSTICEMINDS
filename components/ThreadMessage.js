@@ -94,10 +94,10 @@ export default function ThreadMessage({ messageId, headers, snippet }) {
       >
         <div className="flex-1">
           <div className="flex justify-between mb-1">
-            <span className="text-gray-400">
+            <span className="text-gray-200">
               From: {headers.find(h => h.name === 'From')?.value}
             </span>
-            <span className="text-gray-500">
+            <span className="text-gray-400">
               {new Date(
                 headers.find(h => h.name === 'Date')?.value
               ).toLocaleString()}

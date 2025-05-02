@@ -151,7 +151,7 @@ export default function ClientProfile({ email, name }) {
         <h3 className="font-medium text-lg">
           {name ? `${email}` : email}
         </h3>
-        <div className="text-md text-gray-400 space-y-1">
+        <div className="text-md text-gray-200 space-y-1">
           <p>Total Messages: {messageStats?.total || 0}</p>
           <div className="flex space-x-4">
             <p>Received: {messageStats?.received || 0}</p>

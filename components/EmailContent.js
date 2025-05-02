@@ -22,19 +22,17 @@ export default function EmailContent({ content, isHtml }) {
               margin: 0;
               padding: 16px;
               font-family: Arial, system-ui, -apple-system, sans-serif !important;
-              color: black !important;
-              background-color:white !important;
+              color: #E0E0E0 !important;
+              background-color: #1A1A1A !important;
               line-height: 1.5;
-
             }
             
             * {
               max-width: 100% !important;
               font-family: inherit !important;
               line-height: inherit !important;
-
-              color: black !important;
-              background-color:white !important;
+              color: #E0E0E0 !important;
+              background-color: transparent !important;
             }
 
             a {
