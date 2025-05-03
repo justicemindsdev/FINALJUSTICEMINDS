@@ -69,11 +69,34 @@ function Dashboard({ user }) {
   const router = useRouter();
 
   const [progress, setProgress] = useState(30);
+  const [csvData, setCsvData] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(100), 500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Load CSV data
+  useEffect(() => {
+    const fetchCsvData = async () => {
+      try {
+        const response = await fetch('/mailsuite_tracks_1744690976.csv');
+        const text = await response.text();
+        setCsvData(text);
+      } catch (error) {
+        console.error('Failed to load CSV data:', error);
+      }
+    };
+
+    fetchCsvData();
+  }, []);
+
+  // Log user data for debugging
+  useEffect(() => {
+    if (user) {
+      console.log("Current user loaded:", user.id);
+    }
+  }, [user]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -545,6 +568,7 @@ function Dashboard({ user }) {
                             <ClientProfile
                               email={selectedEmail.email}
                               name={selectedEmail.name}
+                              csvData={csvData}
                             />
 
                             <div className="p-4">
