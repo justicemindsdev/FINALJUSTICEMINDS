@@ -3,13 +3,43 @@ import axios from 'axios';
 import { Skeleton } from './ui/skeleton';
 import { Component } from './Pie';
 
-export default function ClientProfile({ email, name }) {
+export default function ClientProfile({ email, name, csvData }) {
   const [messageStats, setMessageStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [csvStats, setCsvStats] = useState(null);
   
   // Generate a consistent avatar URL based on email
   const picture = `https://ui-avatars.com/api/?name=${encodeURIComponent(email)}&background=random`;
+
+  // Parse CSV data for this specific email
+  useEffect(() => {
+    if (csvData && email) {
+      try {
+        // Parse CSV data
+        const lines = csvData.split('\n');
+        const headers = lines[0].split(',');
+        
+        // Find rows that match this email
+        const emailIndex = headers.findIndex(h => h.trim().toLowerCase() === 'email');
+        if (emailIndex === -1) return;
+        
+        const matchingRows = lines.slice(1).filter(line => {
+          const values = line.split(',');
+          return values[emailIndex]?.trim().toLowerCase() === email.toLowerCase();
+        });
+        
+        if (matchingRows.length > 0) {
+          setCsvStats({
+            rowCount: matchingRows.length,
+            lastActivity: new Date().toLocaleDateString() // Example, should be parsed from actual CSV data
+          });
+        }
+      } catch (error) {
+        console.error('Failed to parse CSV data:', error);
+      }
+    }
+  }, [csvData, email]);
 
   useEffect(() => {
     const fetchAllMessages = async (query) => {
@@ -157,6 +187,13 @@ export default function ClientProfile({ email, name }) {
             <p>Received: {messageStats?.received || 0}</p>
             <p>Sent: {messageStats?.sent || 0}</p>
           </div>
+          {csvStats && (
+            <div className="mt-2 p-2 bg-[#2c2c2c] rounded-md">
+              <p className="font-semibold text-sm">Track Data:</p>
+              <p className="text-sm">Records: {csvStats.rowCount}</p>
+              <p className="text-sm">Last Activity: {csvStats.lastActivity}</p>
+            </div>
+          )}
           {messageStats?.receivedDates?.first && (
             <p>
               First Received: {messageStats.receivedDates.first.toLocaleString('en-US', options)}
