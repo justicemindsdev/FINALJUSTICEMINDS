@@ -61,6 +61,73 @@ const formatFileSize = (bytes) => {
   return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
 };
 
+// Image thumbnail component for attachments
+const ImageThumbnail = ({ attachment, emailId, isLoading }) => {
+  const [imageSrc, setImageSrc] = useState(null);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    if (attachment.mimeType?.startsWith('image/') && !isLoading) {
+      loadImageThumbnail();
+    }
+  }, [attachment, isLoading]);
+
+  const loadImageThumbnail = async () => {
+    try {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) return;
+
+      const response = await axios.get(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${emailId}/attachments/${attachment.attachmentId}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (response.data?.data) {
+        const base64Data = response.data.data;
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: attachment.mimeType });
+        const url = URL.createObjectURL(blob);
+        setImageSrc(url);
+      }
+    } catch (error) {
+      console.error('Failed to load image thumbnail:', error);
+      setImageError(true);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="animate-spin w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (imageError || !imageSrc) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-500">
+        <span className="text-4xl">🖼️</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageSrc}
+      alt={attachment.filename}
+      className="w-full h-full object-cover"
+      onError={() => setImageError(true)}
+    />
+  );
+};
+
 export default function EmailList({
   em,
   title,
@@ -775,35 +842,64 @@ export default function EmailList({
     return (
       <div className="mb-4">
         <h4 className="font-medium text-gray-400 mb-2">Attachments:</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {displayedAttachmentsList.map((attachment, i) => {
             const attachmentKey = `${emailId}-${attachment.attachmentId}`;
             const isLoading = loadingAttachments[attachmentKey];
+            const isImage = attachment.mimeType?.startsWith('image/');
 
             return (
               <div
                 key={i}
-                className="flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors group cursor-pointer"
+                className={`relative bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors group cursor-pointer border border-gray-700 overflow-hidden ${
+                  isImage ? 'pb-2' : 'p-3'
+                }`}
                 onClick={() => previewAttachment(emailId, attachment)}
               >
-                <span className="text-2xl mr-3">
-                  {getFileIcon(attachment.mimeType, attachment.filename)}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-300 truncate">
-                    {attachment.filename}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {formatFileSize(attachment.size)}
-                  </div>
-                </div>
-                <div className="ml-2">
+                {isImage ? (
+                  <>
+                    {/* Image Thumbnail */}
+                    <div className="aspect-square bg-gray-800 flex items-center justify-center">
+                      <ImageThumbnail 
+                        attachment={attachment} 
+                        emailId={emailId}
+                        isLoading={isLoading}
+                      />
+                    </div>
+                    <div className="p-2">
+                      <div className="text-xs font-medium text-gray-300 truncate">
+                        {attachment.filename}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {formatFileSize(attachment.size)}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Non-image files */}
+                    <div className="flex items-center">
+                      <span className="text-3xl mr-3 flex-shrink-0">
+                        {getFileIcon(attachment.mimeType, attachment.filename)}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-300 truncate">
+                          {attachment.filename}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {formatFileSize(attachment.size)}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {/* Loading indicator */}
+                <div className="absolute top-2 right-2">
                   {isLoading ? (
                     <span className="text-blue-400 animate-pulse">⌛</span>
                   ) : (
-                    <span className="text-gray-400 opacity-0 group-hover:opacity-100">
-                      👁️
-                    </span>
+                    <span className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">👁️</span>
                   )}
                 </div>
               </div>
@@ -811,14 +907,17 @@ export default function EmailList({
           })}
         </div>
         {attachments.length > displayCount && (
-          <div className="text-center mt-2">
-            <button
-              onClick={() => handleLoadMoreEmailAttachments(emailId)}
-              className="text-sm text-blue-400 hover:text-blue-300"
-            >
-              Show More Attachments
-            </button>
-          </div>
+          <button
+            onClick={() =>
+              setDisplayedEmailAttachments((prev) => ({
+                ...prev,
+                [emailId]: (prev[emailId] || 3) + 3,
+              }))
+            }
+            className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+          >
+            Show {Math.min(3, attachments.length - displayCount)} more attachments...
+          </button>
         )}
       </div>
     );
