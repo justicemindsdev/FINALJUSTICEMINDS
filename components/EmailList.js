@@ -61,31 +61,48 @@ const formatFileSize = (bytes) => {
   return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
 };
 
-// Image thumbnail component for attachments
+// Enhanced Image thumbnail component for attachments
 const ImageThumbnail = ({ attachment, emailId, isLoading }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [imageError, setImageError] = useState(false);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   useEffect(() => {
-    if (attachment.mimeType?.startsWith('image/') && !isLoading) {
+    if (attachment.mimeType?.startsWith('image/') && !isLoading && !imageSrc && !imageError) {
       loadImageThumbnail();
     }
-  }, [attachment, isLoading]);
+  }, [attachment, isLoading, imageSrc, imageError]);
 
   const loadImageThumbnail = async () => {
+    if (isLoadingImage) return; // Prevent multiple concurrent requests
+    
+    setIsLoadingImage(true);
     try {
       const accessToken = localStorage.getItem("access_token");
-      if (!accessToken) return;
+      if (!accessToken) {
+        console.warn('No access token available for thumbnail');
+        setImageError(true);
+        return;
+      }
 
+      // Use the same fetch method as previewAttachment for consistency
       const response = await axios.get(
         `https://gmail.googleapis.com/gmail/v1/users/me/messages/${emailId}/attachments/${attachment.attachmentId}`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
+          timeout: 10000, // 10 second timeout
+          validateStatus: (status) => status < 500,
         }
       );
 
       if (response.data?.data) {
-        const base64Data = response.data.data;
+        // Clean the base64 data
+        const base64Data = response.data.data
+          .replace(/-/g, "+")
+          .replace(/_/g, "/")
+          .replace(/\s/g, "");
+        
+        // Create blob URL for thumbnail
         const byteCharacters = atob(base64Data);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -95,16 +112,30 @@ const ImageThumbnail = ({ attachment, emailId, isLoading }) => {
         const blob = new Blob([byteArray], { type: attachment.mimeType });
         const url = URL.createObjectURL(blob);
         setImageSrc(url);
+      } else {
+        console.warn('No image data received for thumbnail');
+        setImageError(true);
       }
     } catch (error) {
-      console.error('Failed to load image thumbnail:', error);
+      console.error('Failed to load image thumbnail:', error.message);
       setImageError(true);
+    } finally {
+      setIsLoadingImage(false);
     }
   };
 
-  if (isLoading) {
+  // Cleanup blob URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (imageSrc) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [imageSrc]);
+
+  if (isLoading || isLoadingImage) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center bg-gray-800">
         <div className="animate-spin w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full"></div>
       </div>
     );
@@ -112,8 +143,11 @@ const ImageThumbnail = ({ attachment, emailId, isLoading }) => {
 
   if (imageError || !imageSrc) {
     return (
-      <div className="w-full h-full flex items-center justify-center text-gray-500">
-        <span className="text-4xl">🖼️</span>
+      <div className="w-full h-full flex items-center justify-center text-gray-500 bg-gray-800">
+        <div className="text-center">
+          <span className="text-2xl block">🖼️</span>
+          <span className="text-xs text-gray-400 block mt-1">Image</span>
+        </div>
       </div>
     );
   }
@@ -122,8 +156,14 @@ const ImageThumbnail = ({ attachment, emailId, isLoading }) => {
     <img
       src={imageSrc}
       alt={attachment.filename}
-      className="w-full h-full object-cover"
-      onError={() => setImageError(true)}
+      className="w-full h-full object-cover rounded-t-lg"
+      onError={() => {
+        console.warn('Image failed to display:', attachment.filename);
+        setImageError(true);
+      }}
+      onLoad={() => {
+        console.log('Thumbnail loaded successfully:', attachment.filename);
+      }}
     />
   );
 };
