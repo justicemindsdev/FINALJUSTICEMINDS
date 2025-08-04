@@ -33,6 +33,7 @@ import Navbar from "@/components/Navbar";
 import Welcome from "@/components/Welcome";
 import { Button } from "@/components/ui/button";
 import ShareDialog from "@/components/ShareDialogue";
+import TerminalChat from "@/components/TerminalChat";
 
 // Utils
 import { parseEmailAddresses, formatEmailData } from "@/lib/emailUtils";
@@ -66,6 +67,7 @@ function Dashboard({ user }) {
     useState(null);
   const [selectedSentNextPageToken, setSelectedSentNextPageToken] =
     useState(null);
+  const [activeTab, setActiveTab] = useState('emails'); // 'emails' or 'terminal'
   const router = useRouter();
 
   const [progress, setProgress] = useState(30);
@@ -446,6 +448,11 @@ function Dashboard({ user }) {
     }
   };
 
+  const handleSiteUpdate = () => {
+    // Site was updated via terminal chat - could refresh data or show notification
+    console.log('Site updated via terminal chat');
+  };
+
   if (loading) {
     return <Progress value={progress} className="w-full mt-10" />;
   }
@@ -622,13 +629,53 @@ function Dashboard({ user }) {
               <ResizablePanel defaultSize={78}>
                 <ResizablePanelGroup direction="vertical">
                   <ResizablePanel defaultSize={20}>
-                    <div className="flex h-full items-center justify-center p-3 border-b-2 border-[#161616]">
-                      <SearchEmails onSearchResults={handleSearchResults} />
+                    <div className="flex h-full flex-col border-b-2 border-[#161616]">
+                      {/* Tab Navigation */}
+                      <div className="flex border-b border-[#222222] bg-[#111111]">
+                        <button
+                          onClick={() => setActiveTab('emails')}
+                          className={`px-6 py-3 text-sm font-medium transition-colors ${
+                            activeTab === 'emails'
+                              ? 'text-white border-b-2 border-blue-500 bg-[#1a1a1a]'
+                              : 'text-gray-400 hover:text-white hover:bg-[#1a1a1a]'
+                          }`}
+                        >
+                          📧 Emails
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('terminal')}
+                          className={`px-6 py-3 text-sm font-medium transition-colors ${
+                            activeTab === 'terminal'
+                              ? 'text-white border-b-2 border-green-500 bg-[#1a1a1a]'
+                              : 'text-gray-400 hover:text-white hover:bg-[#1a1a1a]'
+                          }`}
+                        >
+                          💻 Terminal
+                        </button>
+                      </div>
+                      
+                      {/* Tab Content */}
+                      {activeTab === 'emails' && (
+                        <div className="flex-1 flex items-center justify-center p-3">
+                          <SearchEmails onSearchResults={handleSearchResults} />
+                        </div>
+                      )}
+                      {activeTab === 'terminal' && (
+                        <div className="flex-1 p-3 bg-[#0a0a0a]">
+                          <div className="text-center text-gray-400 text-sm">
+                            Terminal Chat Active - Use the main panel below
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </ResizablePanel>
                   <ResizablePanel defaultSize={80}>
                     <div className="flex flex-col h-full overflow-y-auto relative">
-                      {searchResults ? (
+                      {activeTab === 'terminal' ? (
+                        <div className="h-full p-4 bg-[#0a0a0a]">
+                          <TerminalChat onSiteUpdate={handleSiteUpdate} />
+                        </div>
+                      ) : searchResults ? (
                         <SearchResults
                           results={searchResults}
                           searchQuery={currentSearchQuery}
