@@ -23,7 +23,14 @@ html, body {
   color: var(--foreground);
   background: var(--background);
   font-family: "Geist", Arial, Helvetica, sans-serif;
-  
+  /* Mobile optimization */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* Prevent horizontal scrolling on mobile */
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -150,5 +157,45 @@ color: #aaaaaa;
 }
 .ql-fill {
   fill: #aaaaaa !important;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Ensure buttons are touch-friendly */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Make text inputs mobile-friendly */
+  input, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Responsive typography */
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+}
+
+/* Touch-friendly scrollbars on mobile */
+@media (hover: none) and (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Safe area insets for iOS */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
 }
 

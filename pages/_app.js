@@ -1,11 +1,11 @@
-// import { SessionProvider } from "next-auth/react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import '@/styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
     return (
-        // <SessionProvider session={pageProps.session}>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
             <Component classname={`antialiased`} {...pageProps} />
-        // </SessionProvider>
+        </GoogleOAuthProvider>
     );
 }
 
