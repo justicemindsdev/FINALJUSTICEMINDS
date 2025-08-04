@@ -2,6 +2,7 @@
 export default function TabNavigation({ activeTab, setActiveTab }) {
   const tabs = [
     { id: 'emails', label: '📧 Emails', color: 'blue' },
+    { id: 'shared', label: '🔗 Shared', color: 'purple' },
     { id: 'terminal', label: '💻 Terminal', color: 'green' }
   ];
 

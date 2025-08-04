@@ -5,6 +5,7 @@ import EmailList from '@/components/EmailList';
 import ShareDialog from '@/components/ShareDialogue';
 import TerminalChat from '@/components/TerminalChat';
 import Welcome from '@/components/Welcome';
+import SharedTab from './SharedTab';
 import { Button } from '@/components/ui/button';
 
 export default function MainContent({
@@ -45,6 +46,15 @@ export default function MainContent({
       <span className="sr-only">Loading...</span>
     </div>
   );
+
+  // Shared view
+  if (activeTab === 'shared') {
+    return (
+      <div className="h-full bg-[#0a0a0a]">
+        <SharedTab userId={user?.id} />
+      </div>
+    );
+  }
 
   // Terminal view
   if (activeTab === 'terminal') {

@@ -84,7 +84,7 @@ const ShareDialog = ({ isOpen, onClose, email, userId }) => {
 
           {shares?.map((share) => (
             <div  key={share.id} className="flex items-center justify-between p-4 border border-[#1d1d1d] rounded-lg">
-              <a target='_blank' href={`/share/groups?id=${share?.uuid}&token=${userId}`} className="flex-1 ">
+              <a target='_blank' href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://finaljusticeminds-fyqa.vercel.app'}/share/groups?id=${share?.uuid}&token=${userId}`} className="flex-1 ">
                 <h3 className="font-medium">{share.title}</h3>
                 <div className="mt-1 text-sm text-gray-500">
                   Shared with: {share.emails?.join(', ') || 'No shares yet'}

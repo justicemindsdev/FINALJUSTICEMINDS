@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 /**
@@ -11,24 +11,29 @@ export default function SearchEmails({ onSearchResults }) {
   const [currentQuery, setCurrentQuery] = useState("");
   const [nextPageToken, setNextPageToken] = useState(null);
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [error, setError] = useState("");
+  const [rateLimitDelay, setRateLimitDelay] = useState(1000);
+  const lastRequestTime = useRef(0);
+  const requestQueue = useRef([]);
 
-  // Clear results when query changes
+  // Clear results when query changes with enhanced debouncing
   useEffect(() => {
     if (searchTimeout) {
       clearTimeout(searchTimeout);
     }
 
-    // Clear previous results if query changes
+    // Clear previous results and errors if query changes
     if (searchQuery !== currentQuery) {
       onSearchResults([], null, false, "");
+      setError("");
     }
 
-    // Debounce search for better performance
+    // Enhanced debounce search with rate limiting awareness
     const timeout = setTimeout(() => {
       if (searchQuery.trim() && searchQuery !== currentQuery) {
         handleSearch(null, true); // Pass true to indicate it's from query change
       }
-    }, 500);
+    }, Math.max(1500, rateLimitDelay)); // Adaptive delay based on rate limit
 
     setSearchTimeout(timeout);
 
@@ -37,7 +42,7 @@ export default function SearchEmails({ onSearchResults }) {
         clearTimeout(searchTimeout);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery, rateLimitDelay]);
 
   /**
    * Checks if text contains the exact search phrase
@@ -75,6 +80,50 @@ export default function SearchEmails({ onSearchResults }) {
   };
 
   /**
+   * Rate limiting queue system to prevent API abuse
+   * @param {Function} requestFn - The request function to execute
+   * @returns {Promise} Promise that resolves when request is safe to execute
+   */
+  const rateLimitedRequest = async (requestFn) => {
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime.current;
+    
+    // If we need to wait, add delay
+    if (timeSinceLastRequest < rateLimitDelay) {
+      const waitTime = rateLimitDelay - timeSinceLastRequest;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+    
+    lastRequestTime.current = Date.now();
+    
+    try {
+      const result = await requestFn();
+      // Reset delay on successful request
+      setRateLimitDelay(Math.max(1000, rateLimitDelay * 0.9));
+      return result;
+    } catch (error) {
+      // Handle rate limiting errors
+      if (error.response?.status === 429 || error.message?.includes('rate limit')) {
+        // Exponential backoff
+        const newDelay = Math.min(rateLimitDelay * 2, 30000);
+        setRateLimitDelay(newDelay);
+        setError(`Rate limit exceeded. Waiting ${Math.round(newDelay/1000)}s before retry...`);
+        
+        // Auto-retry after delay
+        setTimeout(() => {
+          setError("");
+          if (searchQuery.trim()) {
+            handleSearch();
+          }
+        }, newDelay);
+        
+        throw error;
+      }
+      throw error;
+    }
+  };
+
+  /**
    * Constructs Gmail API search query for exact phrase matching
    * @param {string} query - User's search input
    * @returns {string} Formatted Gmail API search query
@@ -92,7 +141,7 @@ export default function SearchEmails({ onSearchResults }) {
   };
 
   /**
-   * Fetches and processes search results
+   * Fetches and processes search results with rate limiting
    * @param {string} query - Search query
    * @param {string|null} pageToken - Token for pagination
    * @param {boolean} isLoadMore - Whether this is a load more request
@@ -104,16 +153,19 @@ export default function SearchEmails({ onSearchResults }) {
         throw new Error("Not authenticated");
       }
 
-      const searchResponse = await axios.get(
-        `https://gmail.googleapis.com/gmail/v1/users/me/messages`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          params: {
-            q: constructSearchQuery(query.trim()),
-            maxResults: 20,
-            pageToken: pageToken,
-          },
-        }
+      // Use rate limited request
+      const searchResponse = await rateLimitedRequest(() =>
+        axios.get(
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: {
+              q: constructSearchQuery(query.trim()),
+              maxResults: 10, // Reduced from 20 to minimize rate limiting
+              pageToken: pageToken,
+            },
+          }
+        )
       );
 
       const messages = searchResponse.data?.messages || [];
@@ -121,12 +173,16 @@ export default function SearchEmails({ onSearchResults }) {
       // Store next page token for future load more requests
       setNextPageToken(searchResponse.data.nextPageToken || null);
 
-      // Fetch and process each message
-      const searchResults = await Promise.all(
-        messages.map(async (message) => {
-          const response = await axios.get(
-            `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}?format=full`,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
+      // Fetch and process each message with staggered requests
+      const searchResults = [];
+      for (let i = 0; i < messages.length; i++) {
+        const message = messages[i];
+        try {
+          const response = await rateLimitedRequest(() =>
+            axios.get(
+              `https://gmail.googleapis.com/gmail/v1/users/me/messages/${message.id}?format=full`,
+              { headers: { Authorization: `Bearer ${accessToken}` } }
+            )
           );
 
           const headers = response.data.payload.headers;
@@ -176,44 +232,54 @@ export default function SearchEmails({ onSearchResults }) {
           }
 
           // Only include emails that have exact phrase matches
-          if (matchDetails.length === 0) {
-            return null;
+          if (matchDetails.length > 0) {
+            searchResults.push({
+              id: response.data.id,
+              subject,
+              from,
+              to,
+              date: headers.find((h) => h.name === "Date")?.value,
+              snippet: contentMatch || snippet, // Prioritize matched content in preview
+              matchDetails,
+              body: bodyContent, // Include full body for expanded view
+            });
           }
+        } catch (messageError) {
+          console.warn(`Failed to fetch message ${message.id}:`, messageError);
+          // Continue with other messages
+        }
+      }
 
-          return {
-            id: response.data.id,
-            subject,
-            from,
-            to,
-            date: headers.find((h) => h.name === "Date")?.value,
-            snippet: contentMatch || snippet, // Prioritize matched content in preview
-            matchDetails,
-            body: bodyContent, // Include full body for expanded view
-          };
-        })
-      );
+      // Sort results by relevance
+      const validResults = searchResults.sort((a, b) => {
+        // Prioritize exact phrase matches in subject and content
+        const aSubjectMatch = hasMatch(a.subject, query);
+        const bSubjectMatch = hasMatch(b.subject, query);
+        const aContentMatch = hasMatch(a.snippet, query);
+        const bContentMatch = hasMatch(b.snippet, query);
 
-      // Filter out null results and sort by relevance
-      const validResults = searchResults
-        .filter((result) => result !== null)
-        .sort((a, b) => {
-          // Prioritize exact phrase matches in subject and content
-          const aSubjectMatch = hasMatch(a.subject, query);
-          const bSubjectMatch = hasMatch(b.subject, query);
-          const aContentMatch = hasMatch(a.snippet, query);
-          const bContentMatch = hasMatch(b.snippet, query);
-
-          if (aSubjectMatch && !bSubjectMatch) return -1;
-          if (!aSubjectMatch && bSubjectMatch) return 1;
-          if (aContentMatch && !bContentMatch) return -1;
-          if (!aContentMatch && bContentMatch) return 1;
-          return 0;
-        });
+        if (aSubjectMatch && !bSubjectMatch) return -1;
+        if (!aSubjectMatch && bSubjectMatch) return 1;
+        if (aContentMatch && !bContentMatch) return -1;
+        if (!aContentMatch && bContentMatch) return 1;
+        return 0;
+      });
 
       // Pass results, nextPageToken, isLoadMore flag, and the current query
       onSearchResults(validResults, searchResponse.data.nextPageToken, isLoadMore, query);
+      setError(""); // Clear any previous errors on success
     } catch (error) {
       console.error("Search failed:", error);
+      
+      // Handle specific error types
+      if (error.response?.status === 429) {
+        setError("Rate limit exceeded. Please wait before searching again.");
+      } else if (error.message?.includes('rate limit')) {
+        setError("Search rate limited. Retrying automatically...");
+      } else {
+        setError("Search failed. Please try again.");
+      }
+      
       // Clear results and token on error
       setNextPageToken(null);
       onSearchResults([], null, false, "");
@@ -269,6 +335,13 @@ export default function SearchEmails({ onSearchResults }) {
           {isSearching ? "Searching..." : "Search"}
         </button>
       </form>
+      
+      {error && (
+        <div className="mt-2 p-3 rounded-lg bg-red-900/20 border border-red-500 text-red-300">
+          {error}
+        </div>
+      )}
+      
       {nextPageToken && currentQuery && (
         <button
           onClick={handleLoadMore}

@@ -44,12 +44,6 @@ const GroupShare = () => {
 
   const verifyAndInitialize = async () => {
     try {
-      // const uuid = localStorage.getItem("share_uuid");
-      // if (!uuid) {
-      //   router.push("/");
-      //   return;
-      // }
-
       const { data: shareData } = await supabase
         .from("manageshare")
         .select("*")
@@ -62,11 +56,43 @@ const GroupShare = () => {
         return;
       }
 
+      // Log the access
+      await logAccess(shareData.id);
+      
       setShares(shareData);
       setLoading(false);
     } catch (error) {
       console.error("Failed to verify:", error);
       router.push("/");
+    }
+  };
+
+  const logAccess = async (shareId) => {
+    try {
+      // Get user's IP (in production, you'd get this from a header)
+      const ip = '127.0.0.1'; // Placeholder
+      
+      await supabase
+        .from('shared_link_access_logs')
+        .insert({
+          share_id: shareId,
+          ip_address: ip,
+          user_agent: navigator.userAgent,
+          accessed_emails: [],
+          duration: 0
+        });
+
+      // Update the last_accessed timestamp on manageshare
+      await supabase
+        .from('manageshare')
+        .update({ 
+          last_accessed: new Date().toISOString(),
+          access_count: supabase.raw('access_count + 1')
+        })
+        .eq('id', shareId);
+        
+    } catch (error) {
+      console.error('Failed to log access:', error);
     }
   };
 
