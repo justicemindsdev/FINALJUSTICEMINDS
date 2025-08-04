@@ -114,6 +114,11 @@ const Navbar = ({
               Journalists
             </span>
           </Link>
+          <Link href="/terminal-chat">
+            <span className={`cursor-pointer ${router.pathname === '/terminal-chat' ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'}`}>
+              Terminal Chat
+            </span>
+          </Link>
         </div>
 
         {/* Right section */}
@@ -183,6 +188,11 @@ const Navbar = ({
             <Link href="/journalists" onClick={() => setIsMobileMenuOpen(false)}>
               <span className={`block py-2 ${router.pathname === '/journalists' ? 'text-white font-semibold' : 'text-gray-300'}`}>
                 Journalists
+              </span>
+            </Link>
+            <Link href="/terminal-chat" onClick={() => setIsMobileMenuOpen(false)}>
+              <span className={`block py-2 ${router.pathname === '/terminal-chat' ? 'text-white font-semibold' : 'text-gray-300'}`}>
+                Terminal Chat
               </span>
             </Link>
             <div className="flex items-center gap-4 pt-3 border-t border-[#222222]">
