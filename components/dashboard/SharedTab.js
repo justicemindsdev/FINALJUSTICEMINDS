@@ -99,7 +99,7 @@ export default function SharedTab({ userId }) {
   };
 
   const copyToClipboard = async (link) => {
-    const fullUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://finaljusticeminds-fyqa.vercel.app'}/share/groups?id=${link.uuid}&token=${userId}`;
+    const fullUrl = `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL || 'https://finaljusticeminds-fyqa.vercel.app'}/share/groups?id=${link.uuid}&token=${userId}`;
     try {
       await navigator.clipboard.writeText(fullUrl);
       alert('Link copied to clipboard!');
