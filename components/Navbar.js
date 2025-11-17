@@ -134,11 +134,11 @@ const Navbar = ({
           {/* Mobile section (profile + menu) */}
           <div className="flex items-center md:hidden">
             {/* Profile image */}
-            {user.picture && (
+            {user?.picture && (
               <div className="relative">
-                <img 
-                  src={user.picture} 
-                  className="w-8 h-8 rounded-full border-2 border-gray-700" 
+                <img
+                  src={user.picture}
+                  className="w-8 h-8 rounded-full border-2 border-gray-700"
                   alt={user?.name || 'Profile'}
                 />
               </div>
@@ -154,11 +154,11 @@ const Navbar = ({
           </div>
 
           {/* Desktop profile */}
-          {user.picture && (
+          {user?.picture && (
             <div className="relative hidden md:block md:mr-5">
-              <img 
-                src={user.picture} 
-                className="w-8 h-8 rounded-full border-2 border-gray-700" 
+              <img
+                src={user.picture}
+                className="w-8 h-8 rounded-full border-2 border-gray-700"
                 alt={user?.name || 'Profile'}
               />
             </div>
