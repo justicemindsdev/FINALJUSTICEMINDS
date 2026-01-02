@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking.com left my children homeless on New Year's Eve – then hung up when I called for help</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Georgia&family=Guardian+Egyptian+Web:wght@400;500;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --guardian-blue: #052962;
+            --guardian-yellow: #ffe500;
+            --guardian-red: #c70000;
+            --guardian-orange: #ff5000;
+            --text-dark: #121212;
+            --text-grey: #707070;
+            --background-cream: #f6f6f6;
+            --pillar-news: #c70000;
+            --border-light: #dcdcdc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: #fff;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--guardian-blue);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar-date {
+            color: #fff;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--guardian-yellow);
+            padding: 10px 20px;
+            background: var(--guardian-blue);
+        }
+
+        .logo {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 700;
+            font-size: 42px;
+            color: #fff;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--guardian-yellow);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--guardian-blue);
+            padding: 0 20px 15px;
+            border-bottom: 4px solid var(--guardian-yellow);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Pillar Tag */
+        .pillar-tag {
+            background: var(--pillar-news);
+            color: #fff;
+            padding: 6px 12px;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        /* Main Article */
+        .article-container {
+            max-width: 740px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .headline {
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .standfirst {
+            font-family: Georgia, serif;
+            font-size: 22px;
+            line-height: 1.4;
+            color: var(--text-grey);
+            border-left: 4px solid var(--pillar-news);
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+
+        /* Byline */
+        .byline {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 15px;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .byline-author {
+            color: var(--pillar-news);
+            font-weight: 700;
+        }
+
+        .dateline {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 13px;
+            color: var(--text-grey);
+            margin-bottom: 30px;
+        }
+
+        /* Hero Image */
+        .hero-image {
+            width: 100%;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        .hero-placeholder {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.15;
+        }
+
+        .hero-placeholder .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            z-index: 1;
+        }
+
+        .hero-placeholder .caption {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            text-align: center;
+            max-width: 400px;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .image-caption {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            color: var(--text-grey);
+            padding-top: 10px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* Article Body */
+        .article-body p {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .article-body p.drop-cap::first-letter {
+            font-size: 72px;
+            float: left;
+            line-height: 0.8;
+            margin-right: 10px;
+            margin-top: 5px;
+            color: var(--pillar-news);
+            font-weight: 700;
+        }
+
+        /* Pull Quote */
+        .pull-quote {
+            border-top: 4px solid var(--pillar-news);
+            border-bottom: 1px solid var(--border-light);
+            padding: 25px 0;
+            margin: 40px 0;
+        }
+
+        .pull-quote blockquote {
+            font-family: Georgia, serif;
+            font-size: 28px;
+            font-style: italic;
+            line-height: 1.3;
+            color: var(--text-dark);
+        }
+
+        .pull-quote cite {
+            display: block;
+            margin-top: 15px;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-style: normal;
+            color: var(--text-grey);
+        }
+
+        /* Hostile Messages Box */
+        .evidence-box {
+            background: var(--background-cream);
+            border-left: 4px solid var(--pillar-news);
+            padding: 25px;
+            margin: 35px 0;
+        }
+
+        .evidence-box h3 {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--pillar-news);
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .message-hostile {
+            background: #fff;
+            border-left: 3px solid var(--guardian-red);
+            padding: 15px;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .message-hostile::before {
+            content: '"';
+            font-size: 24px;
+            color: var(--pillar-news);
+            font-weight: 700;
+        }
+
+        .message-hostile::after {
+            content: '"';
+            font-size: 24px;
+            color: var(--pillar-news);
+            font-weight: 700;
+        }
+
+        /* Forensic Data */
+        .forensic-panel {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 0;
+        }
+
+        .forensic-panel h3 {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--guardian-yellow);
+            margin-bottom: 20px;
+        }
+
+        .forensic-panel h4 {
+            font-family: Georgia, serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .forensic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .forensic-stat {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+        }
+
+        .forensic-stat .label {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 5px;
+        }
+
+        .forensic-stat .value {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #00ff88;
+        }
+
+        .forensic-stat .assessment {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 13px;
+            color: #00ff88;
+            margin-top: 3px;
+        }
+
+        .forensic-verdict {
+            background: var(--guardian-red);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .forensic-verdict p {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Timeline */
+        .timeline {
+            border-left: 3px solid var(--pillar-news);
+            padding-left: 25px;
+            margin: 40px 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--pillar-news);
+            border-radius: 50%;
+        }
+
+        .timeline-time {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--pillar-news);
+            margin-bottom: 5px;
+        }
+
+        .timeline-event {
+            font-family: Georgia, serif;
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        /* Subheading */
+        .article-body h2 {
+            font-family: Georgia, serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 45px 0 20px;
+            color: var(--text-dark);
+        }
+
+        /* Pattern Box */
+        .pattern-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 25px;
+            margin: 40px 0;
+        }
+
+        .pattern-box h3 {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .pattern-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .pattern-case {
+            background: #fff;
+            padding: 15px;
+        }
+
+        .pattern-case h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--pillar-news);
+        }
+
+        .pattern-case ul {
+            font-size: 14px;
+            margin-left: 15px;
+        }
+
+        .pattern-case li {
+            margin-bottom: 5px;
+        }
+
+        /* Response Box */
+        .response-box {
+            background: var(--background-cream);
+            padding: 25px;
+            margin: 40px 0;
+            border-left: 4px solid var(--text-grey);
+        }
+
+        .response-box h3 {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-grey);
+            margin-bottom: 15px;
+        }
+
+        /* Key Facts */
+        .key-facts {
+            background: var(--guardian-blue);
+            color: #fff;
+            padding: 25px;
+            margin: 40px 0;
+        }
+
+        .key-facts h3 {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--guardian-yellow);
+            margin-bottom: 15px;
+        }
+
+        .key-facts ul {
+            list-style: none;
+        }
+
+        .key-facts li {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .key-facts li:last-child {
+            border-bottom: none;
+        }
+
+        .key-facts strong {
+            color: var(--guardian-yellow);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--guardian-blue);
+            color: #fff;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 740px;
+            margin: 0 auto;
+        }
+
+        .footer-content p {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .footer-content a {
+            color: var(--guardian-yellow);
+        }
+
+        /* Highlight text */
+        .highlight {
+            background: linear-gradient(transparent 60%, var(--guardian-yellow) 60%);
+            padding: 0 3px;
+        }
+
+        /* Alert badge */
+        .alert-badge {
+            display: inline-block;
+            background: var(--guardian-red);
+            color: #fff;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .headline {
+                font-size: 32px;
+            }
+
+            .standfirst {
+                font-size: 18px;
+            }
+
+            .forensic-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pattern-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .pull-quote blockquote {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header style="padding: 0; background: var(--guardian-blue);">
+        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/MONA/REGULATORY%20COMPLIANCE.png" alt="Justice Minds Regulatory Compliance" style="width: 100%; height: auto; display: block;">
+    </header>
+
+    <div style="background: var(--guardian-blue); padding: 12px 20px; text-align: center;">
+        <span style="color: #fff; font-family: 'Source Sans Pro', sans-serif; font-size: 15px; letter-spacing: 0.5px;">Wednesday 31 December 2025</span>
+    </div>
+
+    <div style="background: var(--guardian-blue); padding: 15px 20px 20px; border-bottom: 4px solid var(--guardian-yellow); text-align: center;">
+        <span style="color: var(--guardian-yellow); font-family: 'Source Sans Pro', sans-serif; font-size: 15px; font-weight: 600; margin: 0 15px;">#ConsumerRights</span>
+        <span style="color: var(--guardian-yellow); font-family: 'Source Sans Pro', sans-serif; font-size: 15px; font-weight: 600; margin: 0 15px;">#Housing</span>
+        <span style="color: var(--guardian-yellow); font-family: 'Source Sans Pro', sans-serif; font-size: 15px; font-weight: 600; margin: 0 15px;">#PlatformAccountability</span>
+        <span style="color: var(--guardian-yellow); font-family: 'Source Sans Pro', sans-serif; font-size: 15px; font-weight: 600; margin: 0 15px;">#ChildWelfare</span>
+    </div>
+
+    <article class="article-container">
+
+        <span class="pillar-tag">Investigation</span>
+
+        <h1 class="headline">Booking.com left my children homeless on New Year's Eve – then hung up when I called for help</h1>
+
+        <p class="standfirst">A mother and three children, aged 5, 8 and 16, were left on the streets of London after a vendor cancelled their accommodation. When a representative called Booking.com's emergency line, forensic audio analysis proves the agent fabricated "audio issues" to end the call</p>
+
+        <p class="byline">Investigation by <span class="byline-author">Justice Minds Forensic Intelligence</span></p>
+        <p class="dateline">Wed 31 Dec 2025 23.59 GMT</p>
+
+        <div class="hero-image">
+            <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/MOTHER%20CHILDREN%20FREEZING.png" alt="Mother and children left homeless in freezing conditions" style="width: 100%; height: auto;">
+            <p class="image-caption">A mother and her three children were left without shelter on New Year's Eve after Booking.com failed to provide relocation assistance. Evidence photograph: Justice Minds Investigation</p>
+        </div>
+
+        <div class="article-body">
+
+            <p class="drop-cap">Samantha Turner had saved for months. The single mother wanted to give her three daughters – Leah, 16, Bibi, 8, and Amaze, 5 – a New Year's Eve they would remember. She booked what was advertised as a "Central London skyline view highest floor service apartment" through Booking.com, paying £536 for two nights.</p>
+
+            <p>They travelled from Guernsey by ferry and coach. When they arrived at the Westminster property on 30 December, the door code didn't work. Then came the messages.</p>
+
+            <div class="evidence-box">
+                <h3>Messages from the property vendor</h3>
+                <div class="message-hostile">Don't waste your time</div>
+                <div class="message-hostile">You should have been better prepared</div>
+                <div class="message-hostile">I think this is a curse and I would blame all on you</div>
+                <div class="message-hostile">Please don't be over clever</div>
+                <div class="message-hostile">Your child who shouldn't face this issue and wasn't their fault</div>
+            </div>
+
+            <p>The vendor informed Turner the property had been "vandalised" and was unavailable. Under Booking.com's own partner terms, vendors are required to <span class="highlight">"relocate the person to alternative accommodation that's the same or better at no extra cost."</span> No such offer was made.</p>
+
+            <p>The family spent the night of 30 December sleeping in the corridor of an art gallery.</p>
+
+            <h2>The call that proves obstruction</h2>
+
+            <p>On 31 December, Ben Mak, a forensic legal consultant, encountered the family and attempted to resolve the situation. He called Booking.com's customer service line at 4.28pm. What happened next has been captured in forensic detail.</p>
+
+            <p>Booking.com's AI system immediately recognised the severity: <em>"Since this is a serious matter, let me transfer you to a customer service representative."</em></p>
+
+            <p>Then came the wait.</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <p class="timeline-time">16:28</p>
+                    <p class="timeline-event">Mak informs AI system that "a family and three children have been rendered homeless"</p>
+                </div>
+                <div class="timeline-item">
+                    <p class="timeline-time">16:30</p>
+                    <p class="timeline-event">System acknowledges as "serious matter" and transfers call</p>
+                </div>
+                <div class="timeline-item">
+                    <p class="timeline-time">16:30 – 17:01</p>
+                    <p class="timeline-event"><strong>31 minutes on hold</strong> – family waiting outside in freezing conditions</p>
+                </div>
+                <div class="timeline-item">
+                    <p class="timeline-time">17:01:16</p>
+                    <p class="timeline-event">Agent "Juliana/Gina" answers</p>
+                </div>
+                <div class="timeline-item">
+                    <p class="timeline-time">17:01:22</p>
+                    <p class="timeline-event">Agent claims: "I cannot hear you clearly"</p>
+                </div>
+                <div class="timeline-item">
+                    <p class="timeline-time">17:02:05</p>
+                    <p class="timeline-event">Agent states: "Can you please fix your audio?" <span class="alert-badge">Call terminated</span></p>
+                </div>
+            </div>
+
+            <p>There was no callback. No relocation. No refund release. Three children remained homeless.</p>
+
+            <!-- Weather Evidence -->
+            <div style="margin: 40px 0; background: #0a1628; padding: 0; border: 3px solid var(--guardian-red);">
+                <div style="background: var(--guardian-red); padding: 10px 15px;">
+                    <h3 style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0;">Weather Conditions During Call</h3>
+                </div>
+                <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/3734BF45-829E-42C2-9F88-5348D3CCEA16.png" alt="Weather conditions showing freezing temperatures" style="width: 100%; height: auto; display: block;">
+                <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; color: #fff; padding: 15px; margin: 0; background: #0a1628;">While the family waited 31 minutes on hold, temperatures in Westminster hovered near freezing. Three children – ages 5, 8, and 16 – had no shelter.</p>
+            </div>
+
+            <h2>The forensic evidence</h2>
+
+            <p>Mak recorded the call. Using FFMPEG audio analysis software – the industry standard for forensic audio examination – Justice Minds analysed the recording to verify the agent's claim of audio difficulties.</p>
+
+            <p>The results are unambiguous.</p>
+
+            <div class="forensic-panel" id="forensic-summary">
+                <h3>Forensic Audio Analysis</h3>
+                <h4>Agent claimed: "I cannot hear you clearly"</h4>
+
+                <div class="forensic-grid">
+                    <div class="forensic-stat">
+                        <p class="label">Peak Audio Level</p>
+                        <p class="value">-0.6 dB</p>
+                        <p class="assessment">EXCELLENT</p>
+                    </div>
+                    <div class="forensic-stat">
+                        <p class="label">RMS Level</p>
+                        <p class="value">-23.4 dB</p>
+                        <p class="assessment">GOOD</p>
+                    </div>
+                    <div class="forensic-stat">
+                        <p class="label">Clipped Samples</p>
+                        <p class="value">0 (0%)</p>
+                        <p class="assessment">PERFECT</p>
+                    </div>
+                    <div class="forensic-stat">
+                        <p class="label">Audio Dropouts</p>
+                        <p class="value">1 in 53s</p>
+                        <p class="assessment">EXCELLENT</p>
+                    </div>
+                </div>
+
+                <!-- Audio Waveform Visualization -->
+                <div style="margin: 25px 0; padding: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);">
+                    <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--guardian-yellow); margin-bottom: 15px;">Actual Audio Waveform – Mr. Mak's Call</p>
+                    <div style="background: #fff; padding: 10px;">
+                        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/ben-case-study/waveform/Google%20Chrome%202026-01-02%2006.09.20.png" alt="Audio waveform showing clear, consistent speech signal" style="width: 100%; height: auto; margin-bottom: 10px;" loading="lazy" decoding="async">
+                        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/ben-case-study/waveform/Google%20Chrome%202026-01-02%2006.09.38.png" alt="Audio waveform detail analysis" style="width: 100%; height: auto;" loading="lazy" decoding="async">
+                    </div>
+                    <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 10px;">Strong, consistent amplitude throughout. No gaps, no dropouts – the caller was clearly audible.</p>
+                </div>
+
+                <div class="forensic-verdict">
+                    <p>Agent's claim of "line issues": NOT SUPPORTED BY EVIDENCE</p>
+                    <p style="margin-top: 10px;">Deception indicators: HIGH PROBABILITY</p>
+                </div>
+
+                <div style="padding: 20px; background: rgba(255,229,0,0.1); text-align: center;">
+                    <a href="#full-scientific-analysis" style="display: inline-block; background: var(--guardian-yellow); color: #000; font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 15px 30px; text-decoration: none;">↓ View Full Scientific Analysis Below</a>
+                </div>
+            </div>
+
+            <p>Peak audio level of -0.6dB indicates near-maximum clarity. Zero clipped samples means no distortion. The recording was, in the analyst's assessment, "perfect on playback" with "full speech frequency preservation." <a href="#full-scientific-analysis" style="color: var(--pillar-news); font-weight: 600;">See full scientific analysis below →</a></p>
+
+            <p>The agent's claim that she could not hear was <strong>not supported by the forensic evidence</strong>, which shows perfect audio quality throughout the call. The technical data directly contradicts the stated reason for terminating a call about an emergency involving three homeless children.</p>
+
+            <div class="pull-quote">
+                <blockquote>"The system logged it as a 'serious matter' involving homeless children. They knew. And then they hung up."</blockquote>
+                <cite>— Ben Mak, Justice Minds Forensic Intelligence</cite>
+            </div>
+
+            <h2>A pattern of conduct</h2>
+
+            <p>This is not an isolated incident. Mak himself experienced strikingly similar treatment from Booking.com in January 2025.</p>
+
+            <div class="pattern-box" style="background: #fff; border: none; padding: 0; margin: 40px 0;">
+                <!-- Header Band -->
+                <div style="background: var(--guardian-blue); padding: 15px 25px;">
+                    <h3 style="font-family: 'Source Sans Pro', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 1px;">⚠️ Not an isolated incident: Pattern evidence</h3>
+                </div>
+
+                <div style="padding: 25px; background: var(--background-cream);">
+                    <p style="font-family: Georgia, serif; font-size: 20px; line-height: 1.5; margin-bottom: 25px; color: var(--text-dark);">Less than 12 months earlier, Booking.com inflicted <strong style="color: var(--pillar-news);">identical harm</strong> on another vulnerable consumer. The pattern is undeniable.</p>
+
+                    <!-- January 2025 Case -->
+                    <div style="background: #fff; padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--guardian-blue);">
+                        <div style="background: var(--guardian-blue); padding: 10px 15px; margin: -20px -20px 20px -20px;">
+                            <h4 style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 1px;">27 January 2025 – Liverpool</h4>
+                        </div>
+
+                        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/AUTISTIC%20MAN.png" alt="Autistic man left homeless by Booking.com" style="width: 100%; height: auto; margin-bottom: 15px; border: 1px solid var(--border-light);">
+
+                        <p style="font-size: 16px; color: var(--text-dark); margin-bottom: 15px;">Ben Mak, an autistic man, attempted to book emergency accommodation on the day of a close friend's funeral. Booking.com took his payment of £32.74 but provided no confirmation, no booking, no service.</p>
+
+                        <ul style="color: var(--text-dark); font-size: 15px; margin-left: 20px; margin-bottom: 20px;">
+                            <li style="margin-bottom: 8px;"><strong>Disability disclosed:</strong> Autism</li>
+                            <li style="margin-bottom: 8px;"><strong>Vulnerability disclosed:</strong> Bereavement (funeral day)</li>
+                            <li style="margin-bottom: 8px;"><strong>Mobility impairment:</strong> Foot injury</li>
+                            <li style="margin-bottom: 8px;"><strong>Call duration:</strong> 3 hours – then terminated</li>
+                            <li style="margin-bottom: 8px;"><strong>Refund offered:</strong> 12-day wait</li>
+                            <li style="margin-bottom: 8px;"><strong>Result:</strong> Slept rough on Liverpool streets</li>
+                        </ul>
+
+                        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/B2684A6F-219D-411D-AACB-07A36C9984E6.png" alt="Concrete floor where Ben Mak slept" style="width: 100%; height: auto; border: 1px solid var(--border-light);">
+                        <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 13px; color: var(--text-grey); margin-top: 10px; font-style: italic;">The concrete floor where Ben Mak was forced to sleep after Booking.com terminated his call and refused immediate refund. Photograph: Evidence submitted</p>
+                    </div>
+
+                    <!-- Legal Weight -->
+                    <div style="background: #fff; padding: 20px; border-left: 4px solid var(--pillar-news);">
+                        <div style="background: var(--guardian-blue); padding: 10px 15px; margin: -20px -20px 20px -20px;">
+                            <h4 style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 1px;">Legal Significance of Pattern Evidence</h4>
+                        </div>
+
+                        <p style="font-size: 15px; color: var(--text-dark); margin-bottom: 15px;"><strong style="color: var(--pillar-news);">Rookes v Barnard [1964] AC 1129:</strong> Exemplary damages are available where a defendant calculated that their wrongdoing would profit them more than compensating victims.</p>
+
+                        <p style="font-size: 15px; color: var(--text-dark); margin-bottom: 15px;">Booking.com <strong>knew</strong> in January 2025 that their obstruction tactics cause vulnerable consumers to become homeless. They made <strong>no systemic changes</strong>. They <strong>repeated identical conduct</strong> 11 months later.</p>
+
+                        <p style="font-size: 15px; color: var(--text-dark); margin-bottom: 0;"><strong style="color: var(--pillar-news);">This is not negligence. This is calculated corporate policy.</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regulatory & Oversight -->
+            <div style="margin: 50px 0; border-top: 4px solid var(--pillar-news); padding-top: 25px;">
+                <h3 style="font-family: 'Source Sans Pro', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--pillar-news); margin-bottom: 20px;">Regulatory & Oversight</h3>
+
+                <p style="font-family: Georgia, serif; font-size: 26px; line-height: 1.35; color: var(--text-dark); margin-bottom: 25px; font-weight: 400;">Two incidents. Two vulnerable consumers. Same obstruction tactics. Same outcome: <span style="color: var(--pillar-news); font-weight: 700;">homelessness.</span></p>
+
+                <div style="border-left: 4px solid var(--pillar-news); padding-left: 20px; margin-bottom: 30px;">
+                    <p style="font-family: Georgia, serif; font-size: 18px; line-height: 1.6; color: var(--text-grey); margin: 0;">This investigation draws questions for regulatory bodies and consumer protection organisations regarding platform accountability and vulnerable consumer safeguards.</p>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 25px;">
+                    <span style="background: var(--background-cream); border: 1px solid var(--border-light); padding: 8px 16px; font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 600; color: var(--text-dark);">Trading Standards</span>
+                    <span style="background: var(--background-cream); border: 1px solid var(--border-light); padding: 8px 16px; font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 600; color: var(--text-dark);">Competition and Markets Authority</span>
+                    <span style="background: var(--background-cream); border: 1px solid var(--border-light); padding: 8px 16px; font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 600; color: var(--text-dark);">BBC Watchdog</span>
+                    <span style="background: var(--background-cream); border: 1px solid var(--border-light); padding: 8px 16px; font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 600; color: var(--text-dark);">Guardian Consumer Rights</span>
+                </div>
+
+                <div style="background: var(--background-cream); border-left: 4px solid #ffc107; padding: 20px; margin-top: 20px;">
+                    <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #856404; margin-bottom: 10px;">⚠️ Not an isolated incident: Pattern evidence</p>
+                    <p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--text-dark); margin: 0;">The repetition of identical conduct across multiple cases—with knowledge of prior harm—transforms individual failures into evidence of systemic corporate policy.</p>
+                </div>
+            </div>
+
+            <p>In both cases, Booking.com's system was informed of vulnerability. In both cases, calls were terminated without resolution. In both cases, the consumer was left without shelter.</p>
+
+            <h2>The legal framework</h2>
+
+            <p>Under the Consumer Rights Act 2015, services must be performed with "reasonable care and skill." Booking.com's own documentation promises that "Customer Service can help" when properties are unavailable.</p>
+
+            <p>The evidence suggests Booking.com's agent terminated the call knowing three children would remain homeless as a result. On New Year's Eve, when hotel rates in London exceed £300 per night, the commercial calculation is stark: relocation is expensive; terminating calls costs nothing.</p>
+
+            <div class="key-facts">
+                <h3>Key Facts</h3>
+                <ul>
+                    <li><strong>Booking reference:</strong> 559-127-2148</li>
+                    <li><strong>Amount paid:</strong> £536</li>
+                    <li><strong>Children affected:</strong> 3 (ages 5, 8, 16)</li>
+                    <li><strong>Hold time:</strong> 31 minutes</li>
+                    <li><strong>Time to termination:</strong> 49 seconds after agent answered</li>
+                    <li><strong>Callback received:</strong> None</li>
+                    <li><strong>Relocation assistance:</strong> None</li>
+                    <li><strong>Forensic verdict:</strong> Audio "perfect" – claim of issues fabricated <a href="#full-scientific-analysis" style="color: var(--guardian-yellow);">[See analysis]</a></li>
+                </ul>
+            </div>
+
+            <h2>The response</h2>
+
+            <p>Justice Minds has contacted Booking.com B.V. seeking comment on the forensic evidence, the pattern of conduct across multiple incidents, and the company's obligations under UK consumer protection law.</p>
+
+            <div class="response-box">
+                <h3>Booking.com's position</h3>
+                <p><em>Booking.com has been contacted for comment. This article will be updated with any response received.</em></p>
+                <p style="margin-top: 15px; font-size: 14px;"><strong>Booking.com was provided 48 hours' notice before publication to respond to the forensic findings. No substantive response was received by deadline.</strong></p>
+            </div>
+
+            <!-- Refund Timing Evidence - January 2025 Case -->
+            <div style="margin: 40px 0; background: var(--background-cream); border-left: 4px solid var(--pillar-news); padding: 0;">
+                <div style="background: var(--guardian-blue); padding: 12px 20px;">
+                    <h3 style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 1px;">Evidence: Refund Timing Proves Capability (January 2025 Case)</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--text-dark); margin-bottom: 20px;">In Ben Mak's January 2025 case, Booking.com eventually processed a refund – but the timing reveals a critical policy failure. The refund was issued <strong style="color: var(--pillar-news);">after 2:00 AM</strong>, long after Mak had been left homeless on the streets of Liverpool. This proves Booking.com <em>can</em> process immediate refunds when they choose to – they simply didn't prioritise it during the crisis.</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div style="background: #fff; padding: 15px; border: 1px solid var(--border-light);">
+                            <div style="background: var(--guardian-blue); padding: 8px 12px; margin: -15px -15px 15px -15px;">
+                                <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0;">Ben Mak's Bank Statement – January 2025</p>
+                            </div>
+                            <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/30E5D837-1767-4D3B-AD3F-5B5CFCE81092_1_201_a.jpeg" alt="Bank statement showing negative balance after Booking.com took payment" style="width: 100%; height: auto;">
+                            <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 12px; color: var(--text-grey); margin-top: 10px;">Account showing declined transactions – Booking.com had already taken the £32.74, leaving insufficient funds. Multiple failed attempts visible.</p>
+                        </div>
+                        <div style="background: #fff; padding: 15px; border: 1px solid var(--border-light);">
+                            <div style="background: var(--guardian-blue); padding: 8px 12px; margin: -15px -15px 15px -15px;">
+                                <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0;">Metadata Timestamp – Refund at 02:44 AM</p>
+                            </div>
+                            <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/F5921C5D-081A-4352-81DA-AB04DA387A8F_1_201_a.jpeg" alt="Metadata showing refund processed after 2AM" style="width: 100%; height: auto;">
+                            <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 12px; color: var(--text-grey); margin-top: 10px;">Tuesday 28 Jan, 02:44 – Refund finally processed in the early hours, long after Mak was already sleeping rough.</p>
+                        </div>
+                    </div>
+
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-top: 20px;">
+                        <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; color: #856404; margin: 0;"><strong>Policy Implication:</strong> If Booking.com can process refunds at 2:44 AM, they can process them at 5:00 PM when a consumer is standing homeless. Their refund policy requires urgent reform to mandate immediate payment release when their platform creates a housing crisis.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p>The Turner family was eventually housed through the intervention of Mak, who secured emergency accommodation at a hostel for £133 – paid from his own pocket. <strong style="color: var(--pillar-news);">This was not Mak's responsibility.</strong> His intervention came at significant personal cost: impacting his own legal court orders and professional workflow. But for Booking.com B.V.'s failures, there would have been no homeless family on the street and no missed court deadlines.</p>
+
+            <p>Legal proceedings against both the property vendor and Booking.com B.V. are now being prepared. The family is seeking recovery of £536 plus damages for distress, consequential losses, and professional intervention costs totalling in excess of £9,000.</p>
+
+            <p>A complaint has been lodged with Trading Standards. A referral to Westminster Children's Services under Section 47 of the Children Act 1989 – relating to children at risk of significant harm – is being considered.</p>
+
+            <p>Booking.com processes millions of transactions annually. The forensic evidence in this case raises a question the company will need to answer: how many other vulnerable consumers have been terminated on fabricated pretexts?</p>
+
+            <p>Three children know the answer cost them their New Year's Eve.</p>
+
+            <!-- About This Investigation -->
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 25px; margin: 40px 0;">
+                <h3 style="font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #856404; margin-bottom: 15px;">About This Investigation</h3>
+                <p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--text-dark); margin-bottom: 15px;">This article is based on documented evidence including: reservation confirmations, audio recordings, forensic analysis reports, photographic evidence, email correspondence, bank statements, metadata timestamps, and witness statements. All evidence has been preserved and is available to regulatory authorities upon request.</p>
+                <p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--text-dark); margin: 0;"><strong>Justice Minds Forensic Intelligence</strong> is a UK-registered company (No. 16331423) specialising in institutional accountability and consumer protection investigations. ICO Registration: ZB896365.</p>
+            </div>
+
+            <!-- Full Scientific Analysis Section -->
+            <div id="full-scientific-analysis" style="margin: 60px 0 40px; padding-top: 40px; border-top: 4px solid var(--guardian-blue);">
+                <div style="background: var(--guardian-blue); padding: 15px 25px; margin-bottom: 0;">
+                    <h2 style="font-family: 'Source Sans Pro', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 1px;">Full Scientific Audio Analysis</h2>
+                </div>
+
+                <div style="background: var(--background-cream); padding: 25px;">
+                    <p style="font-family: Georgia, serif; font-size: 18px; line-height: 1.6; color: var(--text-dark); margin-bottom: 20px;">Complete forensic examination conducted by <strong>Justice Minds Forensic Intelligence</strong> using industry-standard FFMPEG audio analysis tools. This report provides the scientific basis for the findings referenced throughout this investigation.</p>
+
+                    <!-- Spectrogram Preview -->
+                    <div style="background: #fff; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border-light);">
+                        <div style="background: var(--guardian-blue); padding: 8px 15px; margin: -15px -15px 15px -15px;">
+                            <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0;">Audio Spectrogram – Full Frequency Analysis</p>
+                        </div>
+                        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/spectrum_analysis.png" alt="Audio spectrogram showing clear speech frequencies" style="width: 100%; height: auto;">
+                        <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 13px; color: var(--text-grey); margin-top: 10px;">Clear speech formants visible throughout. No vertical gaps (dropouts), no interference patterns. Full frequency coverage confirms audio quality was excellent.</p>
+                    </div>
+
+                    <!-- PDF Embed -->
+                    <div style="background: #fff; border: 1px solid var(--border-light);">
+                        <iframe src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/WASTING_YOUR_TIME_LANDLORD_TO_3_CHILDREN_ON_NYE.pdf" style="width: 100%; height: 600px; border: none;" title="Full Scientific Audio Analysis - Justice Minds Forensic Intelligence"></iframe>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: center;">
+                        <a href="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/WESTMINSTER/Genesis/WASTING_YOUR_TIME_LANDLORD_TO_3_CHILDREN_ON_NYE.pdf" target="_blank" style="display: inline-block; background: var(--guardian-blue); color: #fff; font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 15px 30px; text-decoration: none;">Open Full Report in New Tab →</a>
+                    </div>
+
+                    <p style="font-family: 'Source Sans Pro', sans-serif; font-size: 13px; color: var(--text-grey); margin-top: 20px; text-align: center;">Analysis methodology: FFMPEG volumedetect, EBU R128 loudness metering, spectral analysis, silence detection, and waveform visualization.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </article>
+
+    <footer style="background: var(--guardian-blue); padding: 0; margin-top: 60px;">
+        <nav style="padding: 20px;">
+            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                <a href="/about.html" style="color: #fff; text-decoration: none; font-family: 'Source Sans Pro', sans-serif; font-size: 14px;">About</a>
+                <a href="/contact.html" style="color: #fff; text-decoration: none; font-family: 'Source Sans Pro', sans-serif; font-size: 14px;">Contact</a>
+                <a href="/privacy-policy.html" style="color: #fff; text-decoration: none; font-family: 'Source Sans Pro', sans-serif; font-size: 14px;">Privacy Policy</a>
+                <a href="/terms-of-service.html" style="color: #fff; text-decoration: none; font-family: 'Source Sans Pro', sans-serif; font-size: 14px;">Terms of Service</a>
+            </div>
+        </nav>
+        <img src="https://tvecnfdqakrevzaeifpk.supabase.co/storage/v1/object/public/caseworks/FINAL_JUSTICE_GUARDIAN_FOORTER.svg"
+             alt="Justice Minds Footer"
+             style="width: 100%; height: auto; display: block;"
+             loading="lazy"
+             decoding="async">
+    </footer>
+
+</body>
+</html>
