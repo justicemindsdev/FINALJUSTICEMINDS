@@ -5,12 +5,82 @@ import GoogleSignInButton from "../../components/GoogleSignInButton";
 import { useAuth } from "@/lib/authUtils";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
+import axios from "axios";
 
 export default function Login() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [progress, setProgress] = useState(30);
+
+  // Helper function to set cookie
+  const setCookie = (name, value, days = 7) => {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    const isSecure = window.location.protocol === 'https:';
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax${isSecure ? '; Secure' : ''}`;
+  };
+
+  // Handle OAuth redirect callback
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      // Check for access_token in URL hash (from Google redirect)
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        setIsLoggingIn(true);
+
+        // Parse the hash fragment
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+
+        if (accessToken) {
+          try {
+            // Fetch user info from Google
+            const userResponse = await axios.get(
+              `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`,
+              { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+
+            const userData = {
+              id: userResponse.data.id,
+              email: userResponse.data.email,
+              name: userResponse.data.name,
+              picture: userResponse.data.picture,
+              access_token: accessToken
+            };
+
+            // Store in localStorage
+            localStorage.setItem("user", JSON.stringify(userData));
+            localStorage.setItem("access_token", accessToken);
+
+            // Set cookie for middleware auth check
+            setCookie("access_token", accessToken);
+
+            // Save to Supabase
+            try {
+              await supabase.from('profiles').upsert({
+                id: userData.id,
+                email: userData.email,
+                full_name: userData.name,
+                avatar_url: userData.picture,
+                access_token: accessToken
+              }, { onConflict: 'id' });
+            } catch (e) {
+              console.error('Supabase error:', e);
+            }
+
+            // Clear the hash and redirect
+            window.history.replaceState(null, '', window.location.pathname);
+            window.location.href = '/dashboard';
+          } catch (error) {
+            console.error('OAuth callback error:', error);
+            setIsLoggingIn(false);
+          }
+        }
+      }
+    };
+
+    handleOAuthCallback();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setProgress(100), 500);
