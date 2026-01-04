@@ -119,20 +119,20 @@ export default function SearchEmails({ onSearchResults }) {
   };
 
   /**
-   * Constructs Gmail API search query for exact phrase matching
+   * Constructs Gmail API search query for searching
    * @param {string} query - User's search input
    * @returns {string} Formatted Gmail API search query
    */
   const constructSearchQuery = (query) => {
     // Keep spaces and basic punctuation for phrase searching
     const sanitizedQuery = query.replace(/[^\w\s@.,-]/g, "").trim();
-    
-    // Wrap the query in quotes for exact phrase matching
-    return `{"${sanitizedQuery}" OR 
-      subject:"${sanitizedQuery}" OR 
-      from:"${sanitizedQuery}" OR 
-      to:"${sanitizedQuery}" OR 
-      body:"${sanitizedQuery}"} in:anywhere`;
+
+    // Simple search - Gmail will search across all fields
+    // Using quotes for exact phrase matching when query has multiple words
+    if (sanitizedQuery.includes(' ')) {
+      return `"${sanitizedQuery}"`;
+    }
+    return sanitizedQuery;
   };
 
   /**
@@ -156,7 +156,7 @@ export default function SearchEmails({ onSearchResults }) {
             headers: { Authorization: `Bearer ${accessToken}` },
             params: {
               q: constructSearchQuery(query.trim()),
-              maxResults: 5, // Reduced to minimize rate limiting
+              maxResults: 10,
               pageToken: pageToken,
             },
           }
