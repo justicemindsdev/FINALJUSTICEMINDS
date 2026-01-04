@@ -5,10 +5,6 @@ const nextConfig = {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   },
-  // Enable PWA features for mobile access
-  experimental: {
-    appDir: false,
-  },
   // Optimize for mobile devices
   images: {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
