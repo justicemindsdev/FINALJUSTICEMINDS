@@ -38,8 +38,6 @@ export default function GoogleSignInButton({ onLoginStart }) {
 
   const login = useGoogleLogin({
     flow: "implicit",
-    ux_mode: "redirect",
-    redirect_uri: typeof window !== 'undefined' ? window.location.origin + '/auth/login' : '',
     onSuccess: async (codeResponse) => {
       try {
         // Notify parent component about login start
