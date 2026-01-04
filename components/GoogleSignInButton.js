@@ -34,7 +34,8 @@ export default function GoogleSignInButton({ onLoginStart }) {
   // Helper function to set cookie
   const setCookie = (name, value, days = 7) => {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+    const isSecure = window.location.protocol === 'https:';
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax${isSecure ? '; Secure' : ''}`;
   };
 
   const login = useGoogleLogin({
