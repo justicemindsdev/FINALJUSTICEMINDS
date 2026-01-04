@@ -1,12 +1,10 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function GoogleSignInButton({ onLoginStart }) {
   const [error, setError] = useState(null);
-  const router = useRouter();
 
   const createOrUpdateProfile = async (userData, accessToken) => {
     try {
@@ -85,8 +83,8 @@ export default function GoogleSignInButton({ onLoginStart }) {
         // Create or update profile in Supabase (don't block sign-in if this fails)
         await createOrUpdateProfile(userData, codeResponse.access_token);
 
-        // Redirect to dashboard
-        router.push("/dashboard");
+        // Hard redirect to dashboard (ensures cookie is sent with request)
+        window.location.href = "/dashboard";
       } catch (error) {
         console.error("Login error:", error);
         setError("Authentication failed");
