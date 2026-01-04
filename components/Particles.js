@@ -1,20 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { useRouter } from 'next/router';
 
 
 const ParticleBackground = () => {
@@ -236,100 +222,10 @@ const ParticleBackground = () => {
     };
   }, []);
 
-  const router = useRouter()
-
   return (
     <div className="fixed inset-0 z-0">
-    <div ref={containerRef} className="w-full h-full" />
-    
-    {/* Center container using flex */}
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-      {/* Logo */}
-      <img src="/logomain.png" width="350" alt="Logo" className="mb-2" />
-      <div className="flex gap-3 mb-4">
-      <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="home">About Us</Button>
-      </SheetTrigger>
-      <SheetContent className="bg-[#1c1c1c] sm:max-w-full border-none">
-        <SheetHeader>
-          <SheetTitle>About us</SheetTitle>
-          
-        </SheetHeader>
-        
-        
-      </SheetContent>
-    </Sheet>
-      <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="home">Research</Button>
-      </SheetTrigger>
-      <SheetContent className="bg-[#1c1c1c] sm:max-w-full border-none">
-        <SheetHeader>
-          <SheetTitle>About us</SheetTitle>
-          
-        </SheetHeader>
-        
-        
-      </SheetContent>
-    </Sheet>
-      <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="home">Back Story</Button>
-      </SheetTrigger>
-      <SheetContent className="bg-[#1c1c1c] sm:max-w-full border-none">
-        <SheetHeader>
-          <SheetTitle>About us</SheetTitle>
-          
-        </SheetHeader>
-        
-        
-      </SheetContent>
-    </Sheet>
-      <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="home">Features</Button>
-      </SheetTrigger>
-      <SheetContent className="bg-[#1c1c1c] sm:max-w-full border-none">
-        <SheetHeader>
-          <SheetTitle>About us</SheetTitle>
-          
-        </SheetHeader>
-        
-        
-      </SheetContent>
-    </Sheet>
-      
-        
-      </div>
-
-      <Button className="mb-4 bg-blue-800 rounded-lg font-semibold" onClick={()=> {router.push("/auth/login")}}>Get Started</Button>
-      
-      {/* Shape buttons */}
-      <div className="flex gap-5">
-        <button 
-          onClick={() => window.transformShape('circle')} 
-          className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center text-2xl hover:bg-white/20 transition-colors"
-        >●</button>
-        <button 
-          onClick={() => window.transformShape('nine')} 
-          className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center text-2xl hover:bg-white/20 transition-colors"
-        >9</button>
-        <button 
-          onClick={() => window.transformShape('square')} 
-          className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center text-2xl hover:bg-white/20 transition-colors"
-        >■</button>
-        <button 
-          onClick={() => window.transformShape('heart')} 
-          className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center text-2xl hover:bg-white/20 transition-colors"
-        >♥</button>
-        <button 
-          onClick={() => window.transformShape('ix')} 
-          className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center text-2xl hover:bg-white/20 transition-colors"
-        >IX</button>
-      </div>
+      <div ref={containerRef} className="w-full h-full" />
     </div>
-  </div>
   );
 };
 
