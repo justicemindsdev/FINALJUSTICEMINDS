@@ -12,9 +12,9 @@ export default function SearchEmails({ onSearchResults }) {
   const [nextPageToken, setNextPageToken] = useState(null);
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [error, setError] = useState("");
-  const [rateLimitDelay, setRateLimitDelay] = useState(1000);
+  const [rateLimitDelay, setRateLimitDelay] = useState(500);
   const lastRequestTime = useRef(0);
-  const requestQueue = useRef([]);
+  const requestCount = useRef(0);
 
   // Clear results when query changes with enhanced debouncing
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function SearchEmails({ onSearchResults }) {
     // Enhanced debounce search with rate limiting awareness
     const timeout = setTimeout(() => {
       if (searchQuery.trim() && searchQuery !== currentQuery) {
-        handleSearch(null, true); // Pass true to indicate it's from query change
+        handleSearch(null);
       }
     }, Math.max(1500, rateLimitDelay)); // Adaptive delay based on rate limit
 
@@ -87,36 +87,31 @@ export default function SearchEmails({ onSearchResults }) {
   const rateLimitedRequest = async (requestFn) => {
     const now = Date.now();
     const timeSinceLastRequest = now - lastRequestTime.current;
-    
+
+    // Progressive delay: increase delay as more requests are made
+    requestCount.current += 1;
+    const progressiveDelay = Math.min(rateLimitDelay + (requestCount.current * 100), 2000);
+
     // If we need to wait, add delay
-    if (timeSinceLastRequest < rateLimitDelay) {
-      const waitTime = rateLimitDelay - timeSinceLastRequest;
+    if (timeSinceLastRequest < progressiveDelay) {
+      const waitTime = progressiveDelay - timeSinceLastRequest;
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
-    
+
     lastRequestTime.current = Date.now();
-    
+
     try {
       const result = await requestFn();
-      // Reset delay on successful request
-      setRateLimitDelay(Math.max(1000, rateLimitDelay * 0.9));
+      // Gradually reduce delay on success
+      setRateLimitDelay(Math.max(300, rateLimitDelay * 0.95));
       return result;
     } catch (error) {
       // Handle rate limiting errors
       if (error.response?.status === 429 || error.message?.includes('rate limit')) {
         // Exponential backoff
-        const newDelay = Math.min(rateLimitDelay * 2, 30000);
+        const newDelay = Math.min(rateLimitDelay * 3, 60000);
         setRateLimitDelay(newDelay);
-        setError(`Rate limit exceeded. Waiting ${Math.round(newDelay/1000)}s before retry...`);
-        
-        // Auto-retry after delay
-        setTimeout(() => {
-          setError("");
-          if (searchQuery.trim()) {
-            handleSearch();
-          }
-        }, newDelay);
-        
+        setError(`Rate limit exceeded. Please try again in a few minutes.`);
         throw error;
       }
       throw error;
@@ -161,7 +156,7 @@ export default function SearchEmails({ onSearchResults }) {
             headers: { Authorization: `Bearer ${accessToken}` },
             params: {
               q: constructSearchQuery(query.trim()),
-              maxResults: 10, // Reduced from 20 to minimize rate limiting
+              maxResults: 5, // Reduced to minimize rate limiting
               pageToken: pageToken,
             },
           }
@@ -291,18 +286,19 @@ export default function SearchEmails({ onSearchResults }) {
   /**
    * Handles the search submission
    * @param {Event} e - Form submit event
-   * @param {boolean} fromQueryChange - Whether the search is triggered by query change
    */
-  const handleSearch = async (e, fromQueryChange = false) => {
+  const handleSearch = async (e) => {
     if (e) {
       e.preventDefault();
     }
-    
+
     if (!searchQuery.trim() || isSearching) return;
 
     setIsSearching(true);
     setCurrentQuery(searchQuery); // Store current query for load more
     setNextPageToken(null); // Reset pagination for new search
+    requestCount.current = 0; // Reset request count for new search
+    setError(""); // Clear previous errors
     await fetchSearchResults(searchQuery);
   };
 
