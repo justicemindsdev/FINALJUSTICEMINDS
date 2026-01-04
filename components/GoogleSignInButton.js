@@ -1,93 +1,38 @@
-import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 export default function GoogleSignInButton({ onLoginStart }) {
   const [error, setError] = useState(null);
 
-  // Helper function to set cookie
-  const setCookie = (name, value, days = 7) => {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    const isSecure = window.location.protocol === 'https:';
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax${isSecure ? '; Secure' : ''}`;
-  };
+  const handleSignIn = () => {
+    if (onLoginStart) onLoginStart();
 
-  // Decode JWT to get user info
-  const decodeJwt = (token) => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      return JSON.parse(jsonPayload);
-    } catch (e) {
-      console.error('JWT decode error:', e);
-      return null;
-    }
-  };
+    const clientId = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const redirectUri = encodeURIComponent(window.location.origin + '/auth/login');
+    const scope = encodeURIComponent('openid email profile https://www.googleapis.com/auth/gmail.readonly');
+    const responseType = 'token';
 
-  const handleSuccess = async (credentialResponse) => {
-    try {
-      if (onLoginStart) onLoginStart();
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&prompt=consent`;
 
-      // Decode the JWT credential to get user info
-      const decoded = decodeJwt(credentialResponse.credential);
-
-      if (!decoded) {
-        throw new Error('Failed to decode credential');
-      }
-
-      const userData = {
-        id: decoded.sub,
-        email: decoded.email,
-        name: decoded.name,
-        picture: decoded.picture,
-        credential: credentialResponse.credential
-      };
-
-      // Store in localStorage
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("access_token", credentialResponse.credential);
-
-      // Set cookie for middleware auth check
-      setCookie("access_token", credentialResponse.credential);
-
-      // Save to Supabase
-      try {
-        await supabase.from('profiles').upsert({
-          id: userData.id,
-          email: userData.email,
-          full_name: userData.name,
-          avatar_url: userData.picture,
-          access_token: credentialResponse.credential
-        }, { onConflict: 'id' });
-      } catch (e) {
-        console.error('Supabase error:', e);
-      }
-
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Authentication failed");
-    }
+    // Full page redirect - no popup
+    window.location.href = authUrl;
   };
 
   return (
     <div className="flex flex-col items-center">
-      <GoogleLogin
-        onSuccess={handleSuccess}
-        onError={() => setError("Google Sign-In failed")}
-        useOneTap={false}
-        shape="pill"
-        size="large"
-        text="signin_with"
-        theme="filled_black"
-      />
+      <button
+        onClick={handleSignIn}
+        className="group h-12 px-6 border-2 bg-white text-black font-semibold border-gray-300 rounded-full transition duration-300 hover:border-blue-400"
+      >
+        <div className="relative flex items-center space-x-4 justify-center">
+          <img
+            className="w-5 h-5"
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            loading="lazy"
+            alt="google logo"
+          />
+          <span>Sign in with Google</span>
+        </div>
+      </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
