@@ -17,6 +17,22 @@ import FileUpload from "./FileUpload";
 import QuillEditor from "./QuillEditor";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
+
+/**
+ * Formats date to DD/MM/YYYY, h:mmam/pm format
+ */
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return `${day}/${month}/${year}, ${hours}:${minutes}${ampm}`;
+};
 /**
  * Gets the appropriate icon class based on file type
  * @param {string} mimeType - MIME type of the file
@@ -1002,7 +1018,7 @@ export default function EmailList({
                   </span>
                   <div className="mb-3">
                     <h3 className="text-sm text-gray-500">
-                      {new Date(emailAttachments.date).toLocaleString()}
+                      {formatDate(emailAttachments.date)}
                     </h3>
                     <h3 className="font-semibold text-md text-[#e0e0e0]">
                       {emailAttachments.subject}
@@ -1103,7 +1119,7 @@ export default function EmailList({
                         {index}
                         <div className="flex flex-col border-l px-4 border-gray-500">
                           <h3 className="text-sm text-gray-500">
-                            {new Date(email.date).toLocaleString()}
+                            {formatDate(email.date)}
                           </h3>
                           <h3 className="font-semibold text-md text-[#e0e0e0]">
                             {email.subject}
@@ -1227,7 +1243,7 @@ export default function EmailList({
                         {index}
                         <div className="flex flex-col border-l px-4 border-gray-500">
                           <h3 className="text-sm text-gray-500">
-                            {new Date(email.date).toLocaleString()}
+                            {formatDate(email.date)}
                           </h3>
                           <h3 className="font-semibold text-md text-[#e0e0e0]">
                             {email.subject}

@@ -2,6 +2,30 @@ import { useState, useRef, useEffect } from "react";
 import Welcome from "./Welcome";
 
 /**
+ * Formats date to DD/MM/YYYY, h:mmam/pm format
+ */
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return `${day}/${month}/${year}, ${hours}:${minutes}${ampm}`;
+};
+
+const formatDateShort = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+/**
  * Highlights search query matches in text
  * @param {string} text - Text to highlight
  * @param {string} query - Search query to highlight
@@ -31,8 +55,96 @@ const HighlightText = ({ text, query, darkMode = true }) => {
  * If HTML is detected, renders in iframe with isolated styles
  * If plain text, renders with text formatting and search highlighting
  */
-const EmailContent = ({ content, searchQuery }) => {
+const EmailContent = ({ content, searchQuery, emailMeta }) => {
   const iframeRef = useRef(null);
+
+  // Print function for evidence preservation
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to print');
+      return;
+    }
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Email Evidence - ${emailMeta?.subject || 'Email'}</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 20mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 20px;
+          }
+          .email-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+          }
+          .email-header h1 {
+            font-size: 16pt;
+            margin: 0 0 10px 0;
+          }
+          .email-meta {
+            font-size: 10pt;
+            color: #444;
+          }
+          .email-meta p {
+            margin: 3px 0;
+          }
+          .email-body {
+            page-break-inside: auto;
+          }
+          img {
+            max-width: 100%;
+            height: auto;
+          }
+          a {
+            color: #1a73e8;
+          }
+          .print-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ccc;
+            font-size: 9pt;
+            color: #666;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-header">
+          <h1>${emailMeta?.subject || 'Email'}</h1>
+          <div class="email-meta">
+            <p><strong>From:</strong> ${emailMeta?.from || 'Unknown'}</p>
+            <p><strong>To:</strong> ${emailMeta?.to || 'Unknown'}</p>
+            <p><strong>Date:</strong> ${emailMeta?.date ? formatDate(emailMeta.date) : 'Unknown'}</p>
+          </div>
+        </div>
+        <div class="email-body">
+          ${content}
+        </div>
+        <div class="print-footer">
+          Printed from Justice Minds Forensic Database on ${formatDate(new Date().toISOString())}
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  };
 
   // Check if content contains HTML
   const isHTML = (content) => {
@@ -123,20 +235,40 @@ const EmailContent = ({ content, searchQuery }) => {
 
   if (contentIsHtml) {
     return (
-      <iframe
-        ref={iframeRef}
-        className="w-full bg-white rounded-lg shadow-lg border border-gray-300"
-        style={{ border: 'none', minHeight: '150px' }}
-        sandbox="allow-same-origin"
-        title="Email content"
-      />
+      <div>
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={handlePrint}
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-1"
+          >
+            🖨️ Print for Evidence
+          </button>
+        </div>
+        <iframe
+          ref={iframeRef}
+          className="w-full bg-white rounded-lg shadow-lg border border-gray-300"
+          style={{ border: 'none', minHeight: '150px' }}
+          sandbox="allow-same-origin"
+          title="Email content"
+        />
+      </div>
     );
   }
 
   // Plain text content - preserved for evidence with original styling
   return (
-    <div className="whitespace-pre-wrap text-sm bg-white text-gray-900 p-4 rounded-lg leading-relaxed shadow-lg border border-gray-300">
-      <HighlightText text={content} query={searchQuery} darkMode={false} />
+    <div>
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={handlePrint}
+          className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-1"
+        >
+          🖨️ Print for Evidence
+        </button>
+      </div>
+      <div className="whitespace-pre-wrap text-sm bg-white text-gray-900 p-4 rounded-lg leading-relaxed shadow-lg border border-gray-300">
+        <HighlightText text={content} query={searchQuery} darkMode={false} />
+      </div>
     </div>
   );
 };
@@ -184,7 +316,7 @@ export default function SearchResults({ results, searchQuery }) {
                   <HighlightText text={email.subject} query={searchQuery} />
                 </h3>
                 <span className="text-sm text-gray-500">
-                  {new Date(email.date).toLocaleDateString()}
+                  {formatDateShort(email.date)}
                 </span>
               </div>
 
@@ -242,9 +374,15 @@ export default function SearchResults({ results, searchQuery }) {
                         Full Message:
                       </div>
                       <div className="rounded-lg">
-                        <EmailContent 
-                          content={email.body || email.snippet} 
+                        <EmailContent
+                          content={email.body || email.snippet}
                           searchQuery={searchQuery}
+                          emailMeta={{
+                            subject: email.subject,
+                            from: email.from,
+                            to: email.to,
+                            date: email.date
+                          }}
                         />
                       </div>
                     </div>
@@ -254,7 +392,7 @@ export default function SearchResults({ results, searchQuery }) {
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <span className="text-gray-400">Date: </span>
-                          {new Date(email.date).toLocaleString()}
+                          {formatDate(email.date)}
                         </div>
                         {email.labels && (
                           <div>

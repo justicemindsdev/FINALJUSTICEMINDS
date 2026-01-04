@@ -3,6 +3,22 @@ import axios from 'axios';
 import EmailContent from './EmailContent';
 
 /**
+ * Formats date to DD/MM/YYYY, h:mmam/pm format
+ */
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return `${day}/${month}/${year}, ${hours}:${minutes}${ampm}`;
+};
+
+/**
  * Component to display a single message in a thread with expandable details
  */
 export default function ThreadMessage({ messageId, headers, snippet }) {
@@ -98,9 +114,7 @@ export default function ThreadMessage({ messageId, headers, snippet }) {
               From: {headers.find(h => h.name === 'From')?.value}
             </span>
             <span className="text-gray-400">
-              {new Date(
-                headers.find(h => h.name === 'Date')?.value
-              ).toLocaleString()}
+              {formatDate(headers.find(h => h.name === 'Date')?.value)}
             </span>
           </div>
           {!expanded && (
