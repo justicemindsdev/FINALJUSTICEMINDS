@@ -1,33 +1,9 @@
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function GoogleSignInButton({ onLoginStart }) {
   const [error, setError] = useState(null);
-
-  const createOrUpdateProfile = async (userData, accessToken) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: userData.id,
-          email: userData.email,
-          full_name: userData.name,
-          avatar_url: userData.picture,
-          access_token: accessToken
-        }, {
-          onConflict: 'id'
-        });
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error saving profile:', error);
-      // Don't throw error here, allow sign-in to continue
-      return null;
-    }
-  };
 
   // Helper function to set cookie
   const setCookie = (name, value, days = 7) => {
@@ -36,84 +12,83 @@ export default function GoogleSignInButton({ onLoginStart }) {
     document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax${isSecure ? '; Secure' : ''}`;
   };
 
-  const login = useGoogleLogin({
-    flow: "implicit",
-    onSuccess: async (codeResponse) => {
-      try {
-        // Notify parent component about login start
-        if (onLoginStart) onLoginStart();
+  // Decode JWT to get user info
+  const decodeJwt = (token) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error('JWT decode error:', e);
+      return null;
+    }
+  };
 
-        // Fetch user info from Google
-        const userResponse = await axios.get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${codeResponse.access_token}`,
-          { headers: { Authorization: `Bearer ${codeResponse.access_token}` } }
-        );
+  const handleSuccess = async (credentialResponse) => {
+    try {
+      if (onLoginStart) onLoginStart();
 
-        // Store the complete user data
-        const userData = {
-          id: userResponse.data.id,
-          email: userResponse.data.email,
-          name: userResponse.data.name,
-          picture: userResponse.data.picture,
-          access_token: codeResponse.access_token
-        };
+      // Decode the JWT credential to get user info
+      const decoded = decodeJwt(credentialResponse.credential);
 
-        // Store in localStorage
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("access_token", codeResponse.access_token);
-
-        // Set cookie for middleware auth check
-        setCookie("access_token", codeResponse.access_token);
-
-        // Fetch emails (don't block sign-in if this fails)
-        try {
-          const gmailResponse = await axios.get(
-            "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10",
-            { headers: { Authorization: `Bearer ${codeResponse.access_token}` } }
-          );
-          localStorage.setItem(
-            "emails",
-            JSON.stringify(gmailResponse.data.messages)
-          );
-        } catch (emailError) {
-          console.error("Error fetching emails:", emailError);
-          // Continue with sign-in even if email fetch fails great
-        }
-
-        // Create or update profile in Supabase (don't block sign-in if this fails)
-        await createOrUpdateProfile(userData, codeResponse.access_token);
-
-        // Hard redirect to dashboard (ensures cookie is sent with request)
-        window.location.href = "/dashboard";
-      } catch (error) {
-        console.error("Login error:", error);
-        setError("Authentication failed");
+      if (!decoded) {
+        throw new Error('Failed to decode credential');
       }
-    },
-    onError: (errorResponse) => {
-      console.error("Google Sign-In Error:", errorResponse);
-      setError("Google Sign-In failed");
-    },
-    scope: "https://www.googleapis.com/auth/gmail.readonly profile email",
-  });
+
+      const userData = {
+        id: decoded.sub,
+        email: decoded.email,
+        name: decoded.name,
+        picture: decoded.picture,
+        credential: credentialResponse.credential
+      };
+
+      // Store in localStorage
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("access_token", credentialResponse.credential);
+
+      // Set cookie for middleware auth check
+      setCookie("access_token", credentialResponse.credential);
+
+      // Save to Supabase
+      try {
+        await supabase.from('profiles').upsert({
+          id: userData.id,
+          email: userData.email,
+          full_name: userData.name,
+          avatar_url: userData.picture,
+          access_token: credentialResponse.credential
+        }, { onConflict: 'id' });
+      } catch (e) {
+        console.error('Supabase error:', e);
+      }
+
+      // Redirect to dashboard
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Authentication failed");
+    }
+  };
 
   return (
-    <>
-      <button
-        onClick={() => login()}
-        className="group h-12 px-6 border-2 bg-white text-black font-semibold border-gray-300 rounded-full transition duration-300 hover:border-blue-400"
-      >
-        <div className="relative flex items-center space-x-4 justify-center">
-          <img
-            className="w-5 h-5"
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            loading="lazy"
-            alt="google logo"
-          />
-          <span>Sign in with Google</span>
-        </div>
-      </button>
+    <div className="flex flex-col items-center">
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={() => setError("Google Sign-In failed")}
+        useOneTap={false}
+        shape="pill"
+        size="large"
+        text="signin_with"
+        theme="filled_black"
+      />
       {error && <p className="text-red-500 mt-2">{error}</p>}
-    </>
+    </div>
   );
 }
