@@ -7,15 +7,15 @@ import Welcome from "./Welcome";
  * @param {string} query - Search query to highlight
  * @returns {JSX.Element} Text with highlighted matches
  */
-const HighlightText = ({ text, query }) => {
+const HighlightText = ({ text, query, darkMode = true }) => {
   if (!query) return text;
 
   const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return (
     <span>
-      {parts.map((part, i) => 
+      {parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
-          <span key={i} className="bg-yellow-500/20 text-yellow-200 px-1 rounded">
+          <span key={i} className={darkMode ? "bg-yellow-500/30 text-yellow-200 px-1 rounded" : "bg-yellow-300 text-gray-900 px-1 rounded font-medium"}>
             {part}
           </span>
         ) : (
@@ -55,50 +55,58 @@ const EmailContent = ({ content, searchQuery }) => {
 
   useEffect(() => {
     if (contentIsHtml && iframeRef.current) {
-      // Get iframe document
       const iframeDoc = iframeRef.current.contentDocument || iframeRef.current.contentWindow.document;
-      
-      // Create a style element to reset iframe styles
-      const styleReset = iframeDoc.createElement('style');
-      styleReset.textContent = `
-        /* Reset styles */
-        body {
-          margin: 0;
-          padding: 16px;
-          color: black;
-          font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-          font-size: 14px;
-          line-height: 1.5;
-          background: white;
-        }
-        /* Ensure links are visible */
-        a { color: #60a5fa; }
-        /* Basic table styles */
-        
-        /* Image max-width */
-        
-      `;
-      
+
       // Extract HTML content
       let cleanContent = content;
-      // Find the start of HTML content
       const htmlStart = content.toLowerCase().indexOf('<html');
       const bodyStart = content.toLowerCase().indexOf('<body');
       const divStart = content.toLowerCase().indexOf('<div');
-      
-      // Use the earliest valid HTML tag as the starting point
+
       const validStarts = [htmlStart, bodyStart, divStart].filter(pos => pos !== -1);
       if (validStarts.length > 0) {
         const startPos = Math.min(...validStarts);
         cleanContent = content.substring(startPos);
       }
-      
-      // Write the cleaned content to iframe
+
+      // Write content with original email styling preserved for evidence
       iframeDoc.open();
-      iframeDoc.write('<!DOCTYPE html><html><head></head><body>');
-      iframeDoc.head.appendChild(styleReset);
-      iframeDoc.write(cleanContent);
-      iframeDoc.write('</body></html>');
+      iframeDoc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              margin: 0;
+              padding: 16px;
+              font-family: Arial, system-ui, -apple-system, sans-serif;
+              font-size: 14px;
+              line-height: 1.6;
+              color: #222222;
+              background: #ffffff;
+            }
+            a { color: #1a73e8; }
+            img { max-width: 100%; height: auto; }
+            table { border-collapse: collapse; }
+            * { max-width: 100%; box-sizing: border-box; }
+
+            @media print {
+              body {
+                background: white !important;
+                color: black !important;
+                padding: 0;
+                font-size: 12pt;
+              }
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+            }
+          </style>
+        </head>
+        <body>${cleanContent}</body>
+        </html>
+      `);
       iframeDoc.close();
 
       // Adjust iframe height to content
@@ -107,7 +115,7 @@ const EmailContent = ({ content, searchQuery }) => {
           iframeRef.current.style.height = `${iframeDoc.body.scrollHeight}px`;
         }
       });
-      
+
       resizeObserver.observe(iframeDoc.body);
       return () => resizeObserver.disconnect();
     }
@@ -117,18 +125,18 @@ const EmailContent = ({ content, searchQuery }) => {
     return (
       <iframe
         ref={iframeRef}
-        className="w-full bg-transparent"
-        style={{ border: 'none', minHeight: '100px' }}
+        className="w-full bg-white rounded-lg shadow-lg border border-gray-300"
+        style={{ border: 'none', minHeight: '150px' }}
         sandbox="allow-same-origin"
         title="Email content"
       />
     );
   }
 
-  // Plain text content with white text on black background
+  // Plain text content - preserved for evidence with original styling
   return (
-    <div className="whitespace-pre-wrap text-sm bg-black text-white p-4 rounded-lg leading-relaxed font-mono">
-      <HighlightText text={content} query={searchQuery} />
+    <div className="whitespace-pre-wrap text-sm bg-white text-gray-900 p-4 rounded-lg leading-relaxed shadow-lg border border-gray-300">
+      <HighlightText text={content} query={searchQuery} darkMode={false} />
     </div>
   );
 };
